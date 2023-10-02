@@ -1,8 +1,9 @@
-package ru.mipt.bit.platformer;
+package ru.mipt.bit.platformer.ModelClasses;
 
 import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.Interfaces.ModelObject;
 
-public class Tree implements PropertyObject {
+public class Tree implements ModelObject {
     private GridPoint2 coordinates;
 
     public Tree(GridPoint2 coordinates) {
@@ -13,7 +14,7 @@ public class Tree implements PropertyObject {
         return coordinates;
     }
 
-    public float getRotate(){
-        return 0f;
+    @Override
+    public void updateState(float deltaTime) {
     }
 }

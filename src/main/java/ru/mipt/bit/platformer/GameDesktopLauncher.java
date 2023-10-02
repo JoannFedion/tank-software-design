@@ -5,34 +5,58 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.GameMechanic.Direction;
+import ru.mipt.bit.platformer.GameMechanic.InputController;
+import ru.mipt.bit.platformer.GraphicsObjects.GameFieldGraphics;
+import ru.mipt.bit.platformer.ModelClasses.LevelGame;
+import ru.mipt.bit.platformer.ModelClasses.Tank;
+import ru.mipt.bit.platformer.ModelClasses.Tree;
 
 import static com.badlogic.gdx.Input.Keys.*;
+import static com.badlogic.gdx.Input.Keys.D;
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
     private GameFieldGraphics gameFieldGraphics;
-
-    private ObjectGraphics tankGraphics;
-    private ObjectGraphics treeGraphics;
-
-    private Tank tank;
-    private Tree tree;
+    private LevelGame levelGame;
     private InputController inputController;
 
     @Override
     public void create() {
-        gameFieldGraphics = new GameFieldGraphics("level.tmx");
-
-        tank = new Tank(new GridPoint2(1,1), Direction.RIGHT);
-        tree = new Tree(new GridPoint2(1, 3));
-        // Texture decodes an image file and loads it into GPU memory, it represents a native resource
-        tankGraphics = gameFieldGraphics.createGraphicsObjects("images/tank_blue.png", tank);
-        treeGraphics = gameFieldGraphics.createGraphicsObjects("images/greenTree.png", tree);
-
+        levelGame = new LevelGame();
+        gameFieldGraphics = new GameFieldGraphics("level.tmx", levelGame);
         initKeyMappings();
+
+        Tank tank = new Tank(new GridPoint2(2,2), Direction.RIGHT);
+        Tree tree1 = new Tree(new GridPoint2(2, 1));
+        Tree tree2 = new Tree(new GridPoint2(1, 2));
+        Tree tree3 = new Tree(new GridPoint2(2, 3));
+
+
+        levelGame.add(tank);
+        levelGame.add(tree1, tree2, tree3);
+
+        gameFieldGraphics.createGraphicsObject(tank, inputController);
+        gameFieldGraphics.createGraphicsObject(tree1);
+        gameFieldGraphics.createGraphicsObject(tree2);
+        gameFieldGraphics.createGraphicsObject(tree3);
+
+
     }
 
+    @Override
+    public void render() {
+        clearScreen();
+        gameFieldGraphics.getObjectsAction();
+        levelGame.update(gameFieldGraphics.getDeltaTime());
+        gameFieldGraphics.renderAllObjects();
+    }
+
+    private static void clearScreen() {
+        Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
+        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
+    }
     private void initKeyMappings() {
         inputController = new InputController();
         inputController.addMapping(UP, Direction.UP);
@@ -43,44 +67,6 @@ public class GameDesktopLauncher implements ApplicationListener {
         inputController.addMapping(S, Direction.DOWN);
         inputController.addMapping(RIGHT, Direction.RIGHT);
         inputController.addMapping(D, Direction.RIGHT);
-    }
-
-    @Override
-    public void render() {
-        clearScreen();
-
-        float deltaTime = Gdx.graphics.getDeltaTime();
-
-        Direction direction = inputController.getDirection();
-        updateGameState(deltaTime, direction);
-        renderGame();
-    }
-
-    private void updateGameState(float deltaTime, Direction direction) {
-        if (direction != null & !tank.isMoving()) {
-            GridPoint2 tankTargetCoordinates = direction.apply(tank.getCoordinates());
-            if (!collides(tree.getCoordinates(), tankTargetCoordinates)) {
-                tank.moveTo(tankTargetCoordinates);
-            }
-            tank.rotate(direction);
-        }
-        // calculate interpolated player screen coordinates
-        gameFieldGraphics.calculateInterpolatedScreenCoordinates(tankGraphics, tank);
-
-        tank.updateState(deltaTime);
-    }
-
-    private void renderGame() {
-        gameFieldGraphics.renderAllObjects();
-    }
-
-    private boolean collides(GridPoint2 object1, GridPoint2 object2) {
-        return object1.equals(object2);
-    }
-
-    private static void clearScreen() {
-        Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f);
-        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
     }
 
     @Override

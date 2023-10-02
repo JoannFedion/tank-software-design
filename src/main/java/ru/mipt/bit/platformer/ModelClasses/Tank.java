@@ -1,11 +1,13 @@
-package ru.mipt.bit.platformer;
+package ru.mipt.bit.platformer.ModelClasses;
 
 import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.GameMechanic.Direction;
+import ru.mipt.bit.platformer.Interfaces.MovingObjects;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
-public class Tank implements PropertyObject {
+public class Tank implements MovingObjects {
     private static final float MOVEMENT_SPEED = 0.4f;
     public static final float MOVEMENT_COMPLETED = 1f;
     public static final int MOVEMENT_STARTED = 0;
@@ -14,6 +16,7 @@ public class Tank implements PropertyObject {
     private GridPoint2 coordinates;
     private GridPoint2 destinationCoordinates;
     private Direction direction;
+
 
     public Tank(GridPoint2 coordinates, Direction direction) {
         this.movementProgress = 1;
@@ -42,22 +45,22 @@ public class Tank implements PropertyObject {
     public void rotate(Direction direction) {
         this.direction = direction;
     }
-
+    @Override
     public void updateState(float deltaTime) {
         movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
         if (!isMoving()) {
             // record that the player has reached his/her destination
             coordinates = destinationCoordinates;
         }
-
-
     }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
 
     public float getMovementProgress() {
         return movementProgress;
     }
 
-    public float getRotate() {
-        return direction.getRotation();
-    }
 }
