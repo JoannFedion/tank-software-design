@@ -28,7 +28,7 @@ public enum Direction implements Action {
     }
 
     @Override
-    public boolean isPossibleDoAction(ModelObject object, List<ModelObject> listObjectsInGame) {
+    public boolean isPossibleApplyAction(ModelObject object, List<ModelObject> listObjectsInGame) {
         boolean isApplyToObject = true;
         MovingObjects movingObject = (MovingObjects) object;
         for (ModelObject obj : listObjectsInGame) {

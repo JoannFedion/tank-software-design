@@ -37,8 +37,8 @@ public class Tank implements MovingObjects {
         return !isEqual(movementProgress, MOVEMENT_COMPLETED);
     }
 
-    public void moveTo(GridPoint2 tankTargetCoordinates) {
-        destinationCoordinates = tankTargetCoordinates;
+    public void moveTo(GridPoint2 targetCoordinates) {
+        destinationCoordinates = targetCoordinates;
         movementProgress = MOVEMENT_STARTED;
     }
 

@@ -6,5 +6,5 @@ import ru.mipt.bit.platformer.GameMechanic.Direction;
 public interface MovingObjects extends ModelObject{
     public boolean isMoving();
     public void rotate(Direction direction);
-    public void moveTo(GridPoint2 tankTargetCoordinates);
+    public void moveTo(GridPoint2 targetCoordinates);
 }

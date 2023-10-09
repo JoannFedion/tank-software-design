@@ -21,13 +21,13 @@ class CollidesTestAndIsMovingTankMethod {
 
     @BeforeEach
     void setUp() {
-        tree1 = new Tree(new GridPoint2(2, 1));
-        tree2 = new Tree(new GridPoint2(1, 2));
-        tree3 = new Tree(new GridPoint2(2, 3));
-        tank = new Tank(new GridPoint2(2, 2), Direction.UP);
-        levelGame = new LevelGame();
-        levelGame.add(tree1, tree2, tree3, tank);
-        deltaTime = 1f;
+//        tree1 = new Tree(new GridPoint2(2, 1));
+//        tree2 = new Tree(new GridPoint2(1, 2));
+//        tree3 = new Tree(new GridPoint2(2, 3));
+//        tank = new Tank(new GridPoint2(2, 2), Direction.UP);
+//        levelGame = new LevelGame();
+//        levelGame.add(tree1, tree2, tree3, tank);
+//        deltaTime = 1f;
     }
 
     @Test

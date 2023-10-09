@@ -22,34 +22,20 @@ public class GameDesktopLauncher implements ApplicationListener {
     private LevelGame levelGame;
     private InputController inputController;
 
+
     @Override
     public void create() {
-        levelGame = new LevelGame();
-        gameFieldGraphics = new GameFieldGraphics("level.tmx", levelGame);
         initKeyMappings();
-
-        Tank tank = new Tank(new GridPoint2(2,2), Direction.RIGHT);
-        Tree tree1 = new Tree(new GridPoint2(2, 1));
-        Tree tree2 = new Tree(new GridPoint2(1, 2));
-        Tree tree3 = new Tree(new GridPoint2(2, 3));
-
-
-        levelGame.add(tank);
-        levelGame.add(tree1, tree2, tree3);
-
-        gameFieldGraphics.createGraphicsObject(tank, inputController);
-        gameFieldGraphics.createGraphicsObject(tree1);
-        gameFieldGraphics.createGraphicsObject(tree2);
-        gameFieldGraphics.createGraphicsObject(tree3);
-
+        gameFieldGraphics = new GameFieldGraphics("level.tmx");
+        levelGame = new LevelGame(gameFieldGraphics);
 
     }
 
     @Override
     public void render() {
         clearScreen();
-        gameFieldGraphics.getObjectsAction();
-        levelGame.update(gameFieldGraphics.getDeltaTime());
+//        gameFieldGraphics.getObjectsAction();
+        //levelGame.update(gameFieldGraphics.getDeltaTime());
         gameFieldGraphics.renderAllObjects();
     }
 
