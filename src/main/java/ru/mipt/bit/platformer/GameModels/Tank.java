@@ -1,8 +1,7 @@
-package ru.mipt.bit.platformer.ModelClasses;
+package ru.mipt.bit.platformer.GameModels;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.GameMechanic.Direction;
-import ru.mipt.bit.platformer.Interfaces.MovingObjects;
+import ru.mipt.bit.platformer.Actions.Direction;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
@@ -19,7 +18,7 @@ public class Tank implements MovingObjects {
 
 
     public Tank(GridPoint2 coordinates, Direction direction) {
-        this.movementProgress = 1;
+        this.movementProgress = MOVEMENT_COMPLETED;
         this.coordinates = coordinates;
         this.destinationCoordinates = coordinates;
         this.direction = direction;
@@ -28,36 +27,36 @@ public class Tank implements MovingObjects {
     public GridPoint2 getCoordinates() {
         return coordinates;
     }
-
+    @Override
     public GridPoint2 getDestinationCoordinates() {
         return destinationCoordinates;
     }
-
+    @Override
     public boolean isMoving() {
         return !isEqual(movementProgress, MOVEMENT_COMPLETED);
     }
-
+    @Override
     public void moveTo(GridPoint2 tankTargetCoordinates) {
-        destinationCoordinates = tankTargetCoordinates;
-        movementProgress = MOVEMENT_STARTED;
+        if (!isMoving()) {
+            destinationCoordinates = tankTargetCoordinates;
+            movementProgress = MOVEMENT_STARTED;
+        }
     }
-
+    @Override
     public void rotate(Direction direction) {
         this.direction = direction;
     }
     @Override
     public void updateState(float deltaTime) {
         movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
-        if (!isMoving()) {
+        if (isEqual(movementProgress, MOVEMENT_COMPLETED)) {
             // record that the player has reached his/her destination
             coordinates = destinationCoordinates;
         }
     }
-
     public Direction getDirection() {
         return direction;
     }
-
 
     public float getMovementProgress() {
         return movementProgress;

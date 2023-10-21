@@ -1,7 +1,6 @@
-package ru.mipt.bit.platformer.ModelClasses;
+package ru.mipt.bit.platformer.GameModels;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.Interfaces.ModelObject;
 
 public class Tree implements ModelObject {
     private GridPoint2 coordinates;

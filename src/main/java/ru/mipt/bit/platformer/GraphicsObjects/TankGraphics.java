@@ -6,35 +6,27 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
-import ru.mipt.bit.platformer.Interfaces.Action;
-import ru.mipt.bit.platformer.GameMechanic.InputController;
-import ru.mipt.bit.platformer.Interfaces.GraphicsMovingObjects;
-import ru.mipt.bit.platformer.ModelClasses.Tank;
+import ru.mipt.bit.platformer.GameModels.Tank;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class TankGraphics implements GraphicsMovingObjects {
+public class TankGraphics implements GraphicsGameObjects {
     private Texture texture;
-    private static final String GRAPHICSPATH = "images/tank_blue.png";
     private TextureRegion graphics;
     private Rectangle tankRectangle;
     private GridPoint2 coordinationsTank;
-    private float rotationTank;
-    private Tank ModelTank;
-    private InputController inputController;
+    private Tank modelTank;
 
 
     // player current position coordinates on level 10x8 grid (e.g. x=0, y=1)
-    public TankGraphics(Tank obj, TiledMapTileLayer groundLayer, InputController inputController) {
-        this.texture = new Texture(GRAPHICSPATH);
+    public TankGraphics(Tank obj, TiledMapTileLayer groundLayer, String graphicPath) {
+        this.texture = new Texture(graphicPath);
         // TextureRegion represents Texture portion, there may be many TextureRegion instances of the same Texture
         this.graphics = new TextureRegion(texture);
         this.tankRectangle = createBoundingRectangle(graphics);
-        this.ModelTank = obj;
-        this.rotationTank = ModelTank.getDirection().getRotation();
-        this.coordinationsTank = ModelTank.getCoordinates();
-        this.inputController = inputController;
+        this.modelTank = obj;
+        this.coordinationsTank = modelTank.getCoordinates();
         moveRectangleAtTileCenter(groundLayer, tankRectangle, coordinationsTank);
         // set player initial position
 
@@ -42,29 +34,20 @@ public class TankGraphics implements GraphicsMovingObjects {
 
     @Override
     public void render(Batch batch) {
-        drawTextureRegionUnscaled(batch, graphics, tankRectangle, getModelTank().getDirection().getRotation());
+        drawTextureRegionUnscaled(batch, graphics, tankRectangle, modelTank.getDirection().getRotation());
     }
 
     @Override
     public void dispose() {
         texture.dispose();
     }
-
+    @Override
     public void calculateInterpolatedScreenCoordinates(TileMovement tileMovement) {
         tileMovement.moveRectangleBetweenTileCenters(
                 tankRectangle,
-                ModelTank.getCoordinates(),
-                ModelTank.getDestinationCoordinates(),
-                ModelTank.getMovementProgress()
+                modelTank.getCoordinates(),
+                modelTank.getDestinationCoordinates(),
+                modelTank.getMovementProgress()
         );
-    }
-
-    public Tank getModelTank() {
-        return ModelTank;
-    }
-
-    @Override
-    public Action getAction() {
-        return inputController.getAction();
     }
 }
