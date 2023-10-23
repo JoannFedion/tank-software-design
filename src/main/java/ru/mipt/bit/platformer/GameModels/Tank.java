@@ -24,6 +24,11 @@ public class Tank implements MovingObjects {
         this.direction = direction;
     }
 
+    @Override
+    public Direction getRotate() {
+        return direction;
+    }
+
     public GridPoint2 getCoordinates() {
         return coordinates;
     }

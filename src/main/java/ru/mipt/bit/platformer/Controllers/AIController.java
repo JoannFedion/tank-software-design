@@ -1,6 +1,9 @@
 package ru.mipt.bit.platformer.Controllers;
 
 import ru.mipt.bit.platformer.Actions.Action;
+import ru.mipt.bit.platformer.Actions.Direction;
+import ru.mipt.bit.platformer.Actions.MoveAction;
+import ru.mipt.bit.platformer.GameModels.CollidesController;
 import ru.mipt.bit.platformer.GameModels.ModelObject;
 import ru.mipt.bit.platformer.GameModels.Tank;
 
@@ -9,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.badlogic.gdx.Input.Keys.*;
+import static com.badlogic.gdx.Input.Keys.RIGHT;
 
 public class AIController implements ObjectController {
 
@@ -43,8 +49,15 @@ public class AIController implements ObjectController {
         AIControllers.forEach(ObjectController::execute);
     }
 
-    public void addMapping(int key, Action action) {
+    private void addMapping(int key, Action action) {
         keyToActionMap.put(key, action);
     }
 
+    @Override
+    public void initKeyMappingForController(CollidesController collidesController) {
+        addMapping(UP, new MoveAction(Direction.UP, collidesController));
+        addMapping(DOWN, new MoveAction(Direction.DOWN, collidesController));
+        addMapping(LEFT, new MoveAction(Direction.LEFT, collidesController));
+        addMapping(RIGHT, new MoveAction(Direction.RIGHT, collidesController));
+    }
 }
