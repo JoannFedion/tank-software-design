@@ -1,13 +1,12 @@
 package ru.mipt.bit.platformer.Controllers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g3d.Model;
-import ru.mipt.bit.platformer.Actions.Action;
+import ru.mipt.bit.platformer.Action;
 import ru.mipt.bit.platformer.Actions.Direction;
 import ru.mipt.bit.platformer.Actions.MoveAction;
-import ru.mipt.bit.platformer.GameModels.CollidesController;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
-import ru.mipt.bit.platformer.GameModels.MovingObjects;
+import ru.mipt.bit.platformer.ObjectController;
+import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.ModelObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +14,7 @@ import java.util.Map;
 import static com.badlogic.gdx.Input.Keys.*;
 import static com.badlogic.gdx.Input.Keys.D;
 
-public class InputController implements ObjectController {
+public class InputController implements ObjectController<Integer> {
 
     private ModelObject playerObject;
     private final Map<Integer, Action> keyToActionMap = new HashMap<>();
@@ -25,7 +24,8 @@ public class InputController implements ObjectController {
         this.playerObject = playerObject;
     }
 
-    public void addMapping(int key, Action action) {
+    @Override
+    public void addMapping(Integer key, Action action) {
         keyToActionMap.put(key, action);
     }
 
@@ -41,10 +41,9 @@ public class InputController implements ObjectController {
     @Override
     public void execute() {
         Action action = getAction();
-        if (action != null) action.apply(playerObject);
+        if (action != null && playerObject != null) action.apply(playerObject);
     }
 
-    @Override
     public void initKeyMappingForController(CollidesController collidesController) {
         addMapping(UP, new MoveAction(Direction.UP, collidesController));
         addMapping(W, new MoveAction(Direction.UP, collidesController));
@@ -54,5 +53,12 @@ public class InputController implements ObjectController {
         addMapping(S, new MoveAction(Direction.DOWN, collidesController));
         addMapping(RIGHT, new MoveAction(Direction.RIGHT, collidesController));
         addMapping(D, new MoveAction(Direction.RIGHT, collidesController));
+    }
+
+    @Override
+    public void deleteObject(ModelObject object) {
+        if (playerObject == object){
+            playerObject = null;
+        }
     }
 }

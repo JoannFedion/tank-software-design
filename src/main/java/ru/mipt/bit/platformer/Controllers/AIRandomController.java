@@ -1,15 +1,16 @@
 package ru.mipt.bit.platformer.Controllers;
 
-import ru.mipt.bit.platformer.Actions.Action;
-import ru.mipt.bit.platformer.GameModels.CollidesController;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
+import ru.mipt.bit.platformer.Action;
+import ru.mipt.bit.platformer.ObjectController;
+import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.ModelObject;
 
 import java.util.*;
 
-public class AIRandomController implements ObjectController{
+public class AIRandomController implements ObjectController<Integer> {
 
     private final Map<Integer, Action> keyToActionMap;
-    private final ModelObject AIobject;
+    private ModelObject AIobject;
 
     public AIRandomController(ModelObject AIobject , Map<Integer, Action> keyToActionMap) {
         this.AIobject = AIobject;
@@ -28,8 +29,20 @@ public class AIRandomController implements ObjectController{
     }
 
     @Override
+    public void addMapping(Integer key, Action action) {
+        keyToActionMap.put(key, action);
+    }
+
+    @Override
     public void execute() {
         Action action = getAction();
-        if (action != null) action.apply(AIobject);
+        if (action != null && AIobject != null) action.apply(AIobject);
+    }
+
+    @Override
+    public void deleteObject(ModelObject object) {
+        if (AIobject == object){
+            AIobject = null;
+        }
     }
 }

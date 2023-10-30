@@ -2,11 +2,12 @@ package ru.mipt.bit.platformer.GeneratorsLevelInfo;
 
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.Actions.Direction;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
-import ru.mipt.bit.platformer.GameModels.LevelGame;
-import ru.mipt.bit.platformer.GameModels.Tank;
-import ru.mipt.bit.platformer.GameModels.Tree;
+import ru.mipt.bit.platformer.ModelObject;
+import ru.mipt.bit.platformer.LevelGame;
+import ru.mipt.bit.platformer.GameModels.Objects.Tank;
+import ru.mipt.bit.platformer.GameModels.Objects.Tree;
 import ru.mipt.bit.platformer.LevelCharacteristic;
+import ru.mipt.bit.platformer.LevelGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class RandomLevelGenerator implements LevelGenerator {
     private Random random;
     private int HEIGHT;
     private int WIDTH;
+    private final int INITIAL_HEALTH_TANK;
 
     @Override
     public LevelInfo generateLevelInfo() {
@@ -34,9 +36,10 @@ public class RandomLevelGenerator implements LevelGenerator {
         this.numbers_enemy_tank = enemyTankNumbers;
         this.WIDTH = levelCharacteristic.getWIDTH();
         this.HEIGHT = levelCharacteristic.getHEIGHT();
+        this.INITIAL_HEALTH_TANK = levelCharacteristic.getInitialHealthTank();
     }
     private void generatePlayerObject(){
-        playerObject = new Tank(generateCoordinates(), Direction.UP);
+        playerObject = new Tank(generateCoordinates(), Direction.UP, INITIAL_HEALTH_TANK);
         listObjects.add(playerObject);
     }
 
@@ -56,7 +59,7 @@ public class RandomLevelGenerator implements LevelGenerator {
         GridPoint2 coordinates = generateCoordinates();
         Direction[] listValuesDirection = Direction.values();
         int numberDirection = random.nextInt(listValuesDirection.length);
-        return new Tank(coordinates, listValuesDirection[numberDirection]);
+        return new Tank(coordinates, listValuesDirection[numberDirection], INITIAL_HEALTH_TANK);
     }
 
     private void generateTrees() {

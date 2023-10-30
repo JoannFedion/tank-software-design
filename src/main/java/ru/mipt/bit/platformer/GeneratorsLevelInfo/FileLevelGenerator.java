@@ -2,18 +2,17 @@ package ru.mipt.bit.platformer.GeneratorsLevelInfo;
 
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.Actions.Direction;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
-import ru.mipt.bit.platformer.GameModels.LevelGame;
-import ru.mipt.bit.platformer.GameModels.Tank;
-import ru.mipt.bit.platformer.GameModels.Tree;
+import ru.mipt.bit.platformer.ModelObject;
+import ru.mipt.bit.platformer.LevelGame;
+import ru.mipt.bit.platformer.GameModels.Objects.Tank;
+import ru.mipt.bit.platformer.GameModels.Objects.Tree;
 import ru.mipt.bit.platformer.LevelCharacteristic;
+import ru.mipt.bit.platformer.LevelGenerator;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FileLevelGenerator implements LevelGenerator {
     private final int NEW_LINE = 10;
@@ -22,8 +21,9 @@ public class FileLevelGenerator implements LevelGenerator {
     private final int TANK_CELL = 88;
 
 
-    private int WIDTH;
-    private int HEIGHT;
+    private final int WIDTH;
+    private final int HEIGHT;
+    private final int INITIAL_HEALTH_TANK;
     private String pathToFile;
     private List<ModelObject> listObjects;
     private ModelObject playerObject;
@@ -38,6 +38,7 @@ public class FileLevelGenerator implements LevelGenerator {
         this.listObjects = new ArrayList<>();
         this.HEIGHT = levelCharacteristic.getHEIGHT();
         this.WIDTH = levelCharacteristic.getWIDTH();
+        this.INITIAL_HEALTH_TANK = levelCharacteristic.getInitialHealthTank();
         parse(pathToFile);
     }
 
@@ -57,7 +58,7 @@ public class FileLevelGenerator implements LevelGenerator {
                         listObjects.add(new Tree(new GridPoint2(x, y)));
                         break;
                     case TANK_CELL:
-                        playerObject = new Tank(new GridPoint2(x, y), Direction.UP);
+                        playerObject = new Tank(new GridPoint2(x, y), Direction.UP, INITIAL_HEALTH_TANK);
                         listObjects.add(playerObject);
                         break;
                     default:

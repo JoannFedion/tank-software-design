@@ -1,8 +1,9 @@
 package ru.mipt.bit.platformer.Actions;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.GameModels.CollidesController;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
+import ru.mipt.bit.platformer.Action;
+import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.GameModels.MovingObjects;
 
 public class MoveAction implements Action {
@@ -22,6 +23,7 @@ public class MoveAction implements Action {
             if (isPossibleToApplyAction(direction, movingObjects)) {
                 GridPoint2 newCoordinates = direction.addCoordinates(movingObjects.getCoordinates());
                 movingObjects.moveTo(newCoordinates);
+                collidesController.makeBusyCell(object);
             }
         }
     }
@@ -31,5 +33,4 @@ public class MoveAction implements Action {
         isApplyToObject = collidesController.objectDontCollideWithSomeElse(object, direction);
         return isApplyToObject;
     }
-
 }

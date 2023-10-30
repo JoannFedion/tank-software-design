@@ -2,8 +2,8 @@ package ru.mipt.bit.platformer.Test;
 
 import com.badlogic.gdx.math.GridPoint2;
 import org.junit.jupiter.api.Test;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
-import ru.mipt.bit.platformer.GeneratorsLevelInfo.LevelGenerator;
+import ru.mipt.bit.platformer.ModelObject;
+import ru.mipt.bit.platformer.LevelGenerator;
 import ru.mipt.bit.platformer.GeneratorsLevelInfo.LevelInfo;
 import ru.mipt.bit.platformer.GeneratorsLevelInfo.RandomLevelGenerator;
 import ru.mipt.bit.platformer.LevelCharacteristic;
@@ -50,7 +50,7 @@ class RandomLevelGeneratorTest {
         return 4;
     }
     private LevelCharacteristic createSomeLevelCharacteristic() {
-        return new LevelCharacteristic(10, 10);
+        return new LevelCharacteristic(10, 10, 3);
     }
     private int createSomeNumbersEnemyTank() {
         return 3;

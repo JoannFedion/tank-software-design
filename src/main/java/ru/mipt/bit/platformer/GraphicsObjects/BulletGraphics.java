@@ -6,36 +6,37 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
-import ru.mipt.bit.platformer.GameModels.Objects.Tank;
+import ru.mipt.bit.platformer.GameModels.Objects.Bullet;
 import ru.mipt.bit.platformer.GraphicsGameObjects;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-public class TankGraphics implements GraphicsGameObjects {
+public class BulletGraphics implements GraphicsGameObjects {
+
     private Texture texture;
     private TextureRegion graphics;
-    private Rectangle tankRectangle;
-    private GridPoint2 coordinationsTank;
-    private Tank modelTank;
+    private Rectangle bulletRectangle;
+    private GridPoint2 coordinationsBullet;
+    private Bullet modelBullet;
 
 
     // player current position coordinates on level 10x8 grid (e.g. x=0, y=1)
-    public TankGraphics(Tank obj, TiledMapTileLayer groundLayer, String graphicPath) {
+    public BulletGraphics(Bullet obj, TiledMapTileLayer groundLayer, String graphicPath) {
         this.texture = new Texture(graphicPath);
         // TextureRegion represents Texture portion, there may be many TextureRegion instances of the same Texture
         this.graphics = new TextureRegion(texture);
-        this.tankRectangle = createBoundingRectangle(graphics);
-        this.modelTank = obj;
-        this.coordinationsTank = modelTank.getCoordinates();
-        moveRectangleAtTileCenter(groundLayer, tankRectangle, coordinationsTank);
+        this.bulletRectangle = createBoundingRectangle(graphics);
+        this.modelBullet = obj;
+        this.coordinationsBullet = modelBullet.getCoordinates();
+        moveRectangleAtTileCenter(groundLayer, bulletRectangle, coordinationsBullet);
         // set player initial position
 
     }
 
     @Override
     public void render(Batch batch) {
-        drawTextureRegionUnscaled(batch, graphics, tankRectangle, modelTank.getDirection().getRotation());
+        drawTextureRegionUnscaled(batch, graphics, bulletRectangle, modelBullet.getDirection().getRotation());
     }
 
     @Override
@@ -45,10 +46,11 @@ public class TankGraphics implements GraphicsGameObjects {
     @Override
     public void calculateInterpolatedScreenCoordinates(TileMovement tileMovement) {
         tileMovement.moveRectangleBetweenTileCenters(
-                tankRectangle,
-                modelTank.getCoordinates(),
-                modelTank.getDestinationCoordinates(),
-                modelTank.getMovementProgress()
+                bulletRectangle,
+                modelBullet.getCoordinates(),
+                modelBullet.getDestinationCoordinates(),
+                modelBullet.getMovementProgress()
         );
     }
+
 }

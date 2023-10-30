@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.GraphicsObjects;
+package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,26 +8,31 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
-import ru.mipt.bit.platformer.GameModels.LevelGame;
-import ru.mipt.bit.platformer.GameModels.Tank;
-import ru.mipt.bit.platformer.GameModels.Tree;
+import ru.mipt.bit.platformer.GameModels.Objects.Bullet;
+import ru.mipt.bit.platformer.GameModels.Objects.Tank;
+import ru.mipt.bit.platformer.GameModels.Objects.Tree;
+import ru.mipt.bit.platformer.GraphicsObjects.BulletGraphics;
+import ru.mipt.bit.platformer.GraphicsObjects.TankGraphics;
+import ru.mipt.bit.platformer.GraphicsObjects.TreeGraphics;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
 public class GameFieldGraphics {
-    private Batch batch;
-    private TiledMap level;
-    private MapRenderer levelRenderer;
-    private TiledMapTileLayer groundLayer;
-    private TileMovement tileMovement;
-    private List<GraphicsGameObjects> listGraphicsObjects;
-    private List<ModelObject> listAllModelObjectsInGame;
+    private final Batch batch;
+    private final TiledMap level;
+    private final MapRenderer levelRenderer;
+    private final TiledMapTileLayer groundLayer;
+    private final TileMovement tileMovement;
+    private final List<GraphicsGameObjects> listGraphicsObjects;
+    private final List<ModelObject> listAllModelObjectsInGame;
+    private final Map<ModelObject, GraphicsGameObjects> objectGraphicsGameObjectsMap;
 
     public GameFieldGraphics(String pathGameField, LevelGame levelGame) {
         this.batch = new SpriteBatch();
@@ -37,9 +42,17 @@ public class GameFieldGraphics {
         this.tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
         this.listGraphicsObjects = new ArrayList<>();
         this.listAllModelObjectsInGame = levelGame.getObjectsInGameList();
+        this.objectGraphicsGameObjectsMap = new HashMap<>();
+
         createGraphicsObjects();
 
     }
+
+    public void deleteGraphicObject(ModelObject object){
+        listAllModelObjectsInGame.remove(object);
+        listGraphicsObjects.remove(objectGraphicsGameObjectsMap.remove(object));
+    }
+
 
     public void renderAllObjects() {
         // render each tile of the level
@@ -48,7 +61,6 @@ public class GameFieldGraphics {
         batch.begin();
         listGraphicsObjects.forEach((el) -> el.render(batch));
         batch.end();
-
         calculateInterpolatedScreenCoordinatesForAllObjects();
     }
 
@@ -58,22 +70,30 @@ public class GameFieldGraphics {
         batch.dispose();
     }
 
+    public void createGraphicObject(ModelObject obj){
+        GraphicsGameObjects graphObject = null;
+        if (obj instanceof Tank) {
+            graphObject = new TankGraphics((Tank) obj, groundLayer, "images/tank_blue.png");
+        } else if (obj instanceof Tree) {
+            graphObject = new TreeGraphics((Tree) obj, groundLayer, "images/greenTree.png");
+        } else if( obj instanceof Bullet){
+            graphObject = new BulletGraphics((Bullet) obj, groundLayer, "images/bullet.png");
+        }
+        listGraphicsObjects.add(graphObject);
+        objectGraphicsGameObjectsMap.put(obj, graphObject);
+        renderAllObjects();
+    }
+
     private void createGraphicsObjects() {
         for (ModelObject obj : listAllModelObjectsInGame) {
-            if (obj instanceof Tank) {
-                listGraphicsObjects.add(new TankGraphics((Tank) obj, groundLayer, "images/tank_blue.png"));
-            } else if (obj instanceof Tree) {
-                listGraphicsObjects.add(new TreeGraphics((Tree) obj, groundLayer, "images/greenTree.png"));
-            }
+            createGraphicObject(obj);
         }
     }
 
 
     private void calculateInterpolatedScreenCoordinatesForAllObjects() {
         for (GraphicsGameObjects graphicObject : listGraphicsObjects) {
-            if (graphicObject instanceof TankGraphics) {
                 graphicObject.calculateInterpolatedScreenCoordinates(tileMovement);
-            }
         }
     }
 

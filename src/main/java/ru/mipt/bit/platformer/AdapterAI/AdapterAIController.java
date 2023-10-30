@@ -7,9 +7,11 @@ import org.awesome.ai.state.GameState;
 import org.awesome.ai.strategy.NotRecommendingAI;
 import ru.mipt.bit.platformer.Actions.Direction;
 import ru.mipt.bit.platformer.Actions.MoveAction;
-import ru.mipt.bit.platformer.Controllers.ObjectController;
-import ru.mipt.bit.platformer.GameModels.*;
+import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.ObjectController;
 import org.awesome.ai.state.movable.*;
+import ru.mipt.bit.platformer.ModelObject;
+import ru.mipt.bit.platformer.GameModels.MovingObjects;
 import ru.mipt.bit.platformer.LevelCharacteristic;
 
 import java.util.HashMap;
@@ -17,18 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 
-public class AdapterAIController implements ObjectController {
+public class AdapterAIController implements ObjectController<Action> {
 
     private AdapterGameState adapterGameState;
     private Map<Direction, Orientation> directionToOrientationMap;
-    private Map<Action, ru.mipt.bit.platformer.Actions.Action> actionAIandGameMap;
+    private Map<Action, ru.mipt.bit.platformer.Action> actionAIandGameMap;
 
     private final AI notRecommendingAI;
 
     public AdapterAIController(List<ModelObject> modelObjectList, MovingObjects playerObject, LevelCharacteristic levelCharacteristic, CollidesController collidesController) {
         createMappingDirectionToOrientation();
         initKeyMappingForController(collidesController);
-        System.out.println(directionToOrientationMap);
         this.adapterGameState = new AdapterGameState(
                 modelObjectList,
                 playerObject,
@@ -51,10 +52,16 @@ public class AdapterAIController implements ObjectController {
         addMapping(Action.MoveSouth, new MoveAction(Direction.DOWN, collidesController));
         addMapping(Action.MoveEast, new MoveAction(Direction.LEFT, collidesController));
         addMapping(Action.MoveWest, new MoveAction(Direction.RIGHT, collidesController));
-        addMapping(Action.Shoot, null);
+
     }
 
-    public void addMapping(Action actionAI, ru.mipt.bit.platformer.Actions.Action actionGame) {
+    @Override
+    public void deleteObject(ModelObject object) {
+        adapterGameState.deleteObject(object);
+    }
+
+    @Override
+    public void addMapping(Action actionAI, ru.mipt.bit.platformer.Action actionGame) {
         actionAIandGameMap.put(actionAI, actionGame);
     }
 
@@ -65,7 +72,7 @@ public class AdapterAIController implements ObjectController {
         for(Recommendation recommendation : notRecommendingAI.recommend(gameState)){
             if (recommendation.getActor() != gameState.getPlayer()) {
                 ModelObject objects = actorAndObjectMap.get(recommendation.getActor());
-                ru.mipt.bit.platformer.Actions.Action action = actionAIandGameMap.get(recommendation.getAction());
+                ru.mipt.bit.platformer.Action action = actionAIandGameMap.get(recommendation.getAction());
                 action.apply(objects);
             }
         }

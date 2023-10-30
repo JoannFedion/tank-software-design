@@ -6,10 +6,11 @@ import org.awesome.ai.state.movable.Actor;
 import org.awesome.ai.state.movable.Bot;
 import org.awesome.ai.state.movable.Orientation;
 import org.awesome.ai.state.movable.Player;
+import ru.mipt.bit.platformer.Action;
 import ru.mipt.bit.platformer.Actions.Direction;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
+import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.GameModels.MovingObjects;
-import ru.mipt.bit.platformer.GameModels.Tree;
+import ru.mipt.bit.platformer.GameModels.Objects.Tree;
 import ru.mipt.bit.platformer.LevelCharacteristic;
 
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class AdapterGameState {
                 .y(playerObject.getCoordinates().y)
                 .destX(playerObject.getDestinationCoordinates().x)
                 .destY(playerObject.getDestinationCoordinates().y)
-                .orientation(directionToOrientationMap.get(playerObject.getRotate()))
+                .orientation(directionToOrientationMap.get(playerObject.getDirection()))
                 .build();
         bondBetweenActorAndModelObject.put(player, playerObject);
         return player;
@@ -98,9 +99,17 @@ public class AdapterGameState {
                 .y(object.getCoordinates().y)
                 .destX(object.getDestinationCoordinates().x)
                 .destY(object.getDestinationCoordinates().y)
-                .orientation(directionToOrientationMap.get(object.getRotate()))
+                .orientation(directionToOrientationMap.get(object.getDirection()))
                 .build();
         bondBetweenActorAndModelObject.put(bot, object);
         return bot;
+    }
+
+    public void deleteObject(ModelObject object) {
+        for (Actor actor : bondBetweenActorAndModelObject.keySet()){
+            if (bondBetweenActorAndModelObject.get(actor) == object){
+                objectsFromGame.remove(object);
+            }
+        }
     }
 }

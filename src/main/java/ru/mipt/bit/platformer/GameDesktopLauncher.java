@@ -4,62 +4,91 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import org.awesome.ai.Action;
-import org.awesome.ai.state.movable.Orientation;
 import ru.mipt.bit.platformer.AdapterAI.AdapterAIController;
 import ru.mipt.bit.platformer.Controllers.AIController;
 import ru.mipt.bit.platformer.Controllers.InputController;
 import ru.mipt.bit.platformer.Actions.*;
-import ru.mipt.bit.platformer.Controllers.ObjectController;
-import ru.mipt.bit.platformer.GameModels.CollidesController;
-import ru.mipt.bit.platformer.GameModels.ModelObject;
 import ru.mipt.bit.platformer.GameModels.MovingObjects;
-import ru.mipt.bit.platformer.GraphicsObjects.GameFieldGraphics;
-import ru.mipt.bit.platformer.GameModels.LevelGame;
-import ru.mipt.bit.platformer.GeneratorsLevelInfo.LevelGenerator;
 import ru.mipt.bit.platformer.GeneratorsLevelInfo.LevelInfo;
 import ru.mipt.bit.platformer.GeneratorsLevelInfo.RandomLevelGenerator;
+import ru.mipt.bit.platformer.Listeners.*;
+import ru.mipt.bit.platformer.ObjectControllers.BulletController;
+import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
 
 import static com.badlogic.gdx.Input.Keys.*;
-import static com.badlogic.gdx.Input.Keys.D;
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
     private GameFieldGraphics gameFieldGraphics;
     private LevelGenerator levelGenerator;
-    private ObjectController inputController;
+    private ObjectController<Integer> inputController;
     private LevelGame levelGame;
     private CollidesController collidesController;
+    private BulletController bulletController;
     private ModelObject playerObject;
-    private ru.mipt.bit.platformer.Controllers.ObjectController AIController;
-    private ObjectController AIInternetController;
+    private ObjectController<Integer> AIController;
+    private ObjectController<org.awesome.ai.Action> AIInternetController;
 
     @Override
     public void create() {
-        LevelCharacteristic levelCharacteristic = new LevelCharacteristic(6, 10);
-        levelGenerator = new RandomLevelGenerator(levelCharacteristic, 2, 2);
+        LevelCharacteristic levelCharacteristic = new LevelCharacteristic(6, 10, 2);
+
+        levelGenerator = new RandomLevelGenerator(levelCharacteristic, 2, 4);
+
         LevelInfo levelInfo = levelGenerator.generateLevelInfo();
+
         playerObject = levelInfo.getPlayerObject();
+
         levelGame = levelInfo.getLevelGame();
-        collidesController = new CollidesController(levelGame.getObjectsInGameList(), levelCharacteristic);
+
+        collidesController = new CollidesController(levelGame, levelCharacteristic);
+
         gameFieldGraphics = new GameFieldGraphics("level.tmx", levelGame);
+
+        CommonListener commonListener = new CommonListener(collidesController);
+
+        bulletController = new BulletController(collidesController, levelGame);
+
+        LevelListener graphicsListener = new GraphicsListener(gameFieldGraphics);
+        LevelListener collisionControllerListener = new CollidesControllerListener(collidesController);
+        ShootListener shootListener = new ShootListener(bulletController);
+        ControllersListener controllersListener = new ControllersListener();
+
+        Action shoot = new ShootAction(collidesController, shootListener);
+
         inputController = new InputController(playerObject);
         inputController.initKeyMappingForController(collidesController);
-//        AIController = new AIController(levelGame.getObjectsInGameList(), playerObject);
-//        AIController.initKeyMappingForController(collidesController);
-        AIInternetController = new AdapterAIController(levelGame.getObjectsInGameList(), (MovingObjects) playerObject, levelCharacteristic, collidesController);
+        inputController.addMapping(SPACE, shoot);
+        controllersListener.addControllers(inputController);
+
+        AIController = new AIController(levelGame.getObjectsInGameList(), playerObject);
+        AIController.initKeyMappingForController(collidesController);
+        AIController.addMapping(SPACE, shoot);
+        controllersListener.addControllers(AIController);
+
+//        AIInternetController = new AdapterAIController(levelGame.getObjectsInGameList(), (MovingObjects) playerObject, levelCharacteristic, collidesController);
+//        AIInternetController.addMapping(org.awesome.ai.Action.Shoot, shoot);
+//        controllersListener.addControllers(AIInternetController);
+
+        commonListener.addListener(graphicsListener);
+        commonListener.addListener(collisionControllerListener);
+        commonListener.addListener(controllersListener);
+
+        collidesController.addListener(commonListener);
+        levelGame.addListener(commonListener);
     }
 
     @Override
     public void render() {
         clearScreen();
         inputController.execute();
-//        AIController.execute();
-        AIInternetController.execute();
+        AIController.execute();
+//        AIInternetController.execute();
+        bulletController.execute();
         levelGame.update(gameFieldGraphics.getDeltaTime());
-        gameFieldGraphics.renderAllObjects();
         collidesController.update();
+        gameFieldGraphics.renderAllObjects();
     }
 
     private static void clearScreen() {
@@ -86,6 +115,8 @@ public class GameDesktopLauncher implements ApplicationListener {
         // dispose of all the native resources (classes which implement com.badlogic.gdx.utils.Disposable)
         gameFieldGraphics.dispose();
     }
+
+
 
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();

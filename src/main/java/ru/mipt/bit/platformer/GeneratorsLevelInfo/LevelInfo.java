@@ -1,7 +1,7 @@
 package ru.mipt.bit.platformer.GeneratorsLevelInfo;
 
-import ru.mipt.bit.platformer.GameModels.ModelObject;
-import ru.mipt.bit.platformer.GameModels.LevelGame;
+import ru.mipt.bit.platformer.ModelObject;
+import ru.mipt.bit.platformer.LevelGame;
 
 public class LevelInfo {
     private final LevelGame levelGame;
