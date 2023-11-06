@@ -1,37 +1,26 @@
-package ru.mipt.bit.platformer.ObjectControllers;
+package ru.mipt.bit.platformer;
 
+import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.Actions.Direction;
-import ru.mipt.bit.platformer.GameModels.DamageModel;
-import ru.mipt.bit.platformer.ModelObject;
-import ru.mipt.bit.platformer.LevelCharacteristic;
-import ru.mipt.bit.platformer.LevelGame;
-import ru.mipt.bit.platformer.LevelListener;
 
 import java.util.*;
 
 public class CollidesController {
-    private final int BUSY = 1;
-    private final int FREE = 0;
+    //    private final int BUSY = 1;
+//    private final int FREE = 0;
     private final int widthLevel;
     private final int heightLevel;
     private final LevelGame levelGame;
     private final Map<Pair<Integer, Integer>, ModelObject> modelObjectMap;
-
-    private LevelListener listenerDying;
 
     public CollidesController(LevelGame levelGame, LevelCharacteristic levelCharacteristic) {
         this.levelGame = levelGame;
         this.widthLevel = levelCharacteristic.getWIDTH();
         this.heightLevel = levelCharacteristic.getHEIGHT();
         this.modelObjectMap = new HashMap<>();
-        fillingBusyFreeFieldObjects();
+        updateField();
     }
-
-    public void addListener(LevelListener listenerDying) {
-        this.listenerDying = listenerDying;
-    }
-
-    private void fillingBusyFreeFieldObjects() {
+    private void updateField() {
         for (int i = 0; i < widthLevel; i++) {
             for (int j = 0; j < heightLevel; j++) {
                 modelObjectMap.remove(new Pair<>(i, j));
@@ -47,7 +36,9 @@ public class CollidesController {
             modelObjectMap.put(new Pair<>(dest_x, dest_y), object);
         }
     }
-
+    public ModelObject getObjectWithCoordinate(GridPoint2 coordinate){
+        return modelObjectMap.get(new Pair<>(coordinate.x, coordinate.y));
+    }
 
     public void makeBusyCell(ModelObject object) {
         int x = object.getCoordinates().x;
@@ -55,53 +46,20 @@ public class CollidesController {
         modelObjectMap.put(new Pair<>(x, y), object);
     }
 
+    public void makeFreeCell(ModelObject object) {
+        int x = object.getCoordinates().x;
+        int y = object.getCoordinates().y;
+        modelObjectMap.remove(new Pair<>(x, y));
+    }
+
     public void update() {
-        fillingBusyFreeFieldObjects();
+        updateField();
     }
 
     public boolean objectDontCollideWithSomeElse(ModelObject obj, Direction direction) {
-        boolean isNotCollide;
         int x_obj = direction.addCoordinates(obj.getCoordinates()).x;
         int y_obj = direction.addCoordinates(obj.getCoordinates()).y;
-
-        if (exitOutBoundsField(x_obj, y_obj)) {
-            calculateDamage(obj);
-            return false;
-        }
-        isNotCollide = isCellFree(x_obj, y_obj);
-
-        if (!isNotCollide) {
-            ModelObject object1 = modelObjectMap.get(new Pair<>(x_obj, y_obj));
-            calculateDamage(obj, object1);
-        }
-        return isNotCollide;
-    }
-
-    private void calculateDamage(ModelObject obj, ModelObject obj1) {
-        if (obj instanceof DamageModel && obj1 instanceof DamageModel) {
-            calculateDamage((DamageModel) obj, (DamageModel) obj1);
-        }
-    }
-
-    private void calculateDamage(ModelObject object) {
-        if (object instanceof DamageModel) {
-            if (!((DamageModel) object).isAlive()) {
-                listenerDying.onDeleteGameObject(object);
-                this.update();
-            }
-        }
-    }
-
-
-    private void calculateDamage(DamageModel objFirst, DamageModel objSecond) {
-        objFirst.getDamage(objSecond);
-        objSecond.getDamage(objFirst);
-        if (!objFirst.isAlive()) {
-            listenerDying.onDeleteGameObject(objFirst);
-        }
-        if (!objSecond.isAlive()) {
-            listenerDying.onDeleteGameObject(objSecond);
-        }
+        return isCellFree(x_obj, y_obj);
     }
 
     public boolean isCellFree(int x, int y) {
@@ -126,30 +84,13 @@ public class CollidesController {
     }
 
     private static class Pair<T, K> {
-        private T value1;
-        private K value2;
+        private final T value1;
+        private final K value2;
 
         public Pair(T value1, K value2) {
             this.value1 = value1;
             this.value2 = value2;
         }
-
-        public T getValue1() {
-            return value1;
-        }
-
-        public K getValue2() {
-            return value2;
-        }
-
-        public void setValue1(T value1) {
-            this.value1 = value1;
-        }
-
-        public void setValue2(K value2) {
-            this.value2 = value2;
-        }
-
         @Override
         public boolean equals(Object object) {
             if (this == object) return true;

@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.GraphicsObjects;
+package ru.mipt.bit.platformer.Graphics.GraphicsObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -45,5 +45,10 @@ public class TreeGraphics implements GraphicsGameObjects {
     @Override
     public void calculateInterpolatedScreenCoordinates(TileMovement tileMovement) {
         //
+    }
+
+    @Override
+    public Rectangle getRectangle() {
+        return treeRectangle;
     }
 }

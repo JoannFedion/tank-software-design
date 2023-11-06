@@ -5,7 +5,7 @@
 //import ru.mipt.bit.platformer.Action;
 //import ru.mipt.bit.platformer.Actions.Direction;
 //import ru.mipt.bit.platformer.Actions.MoveAction;
-//import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+//import ru.mipt.bit.platformer.CollidesController;
 //import ru.mipt.bit.platformer.GameModels.Objects.Tank;
 //import ru.mipt.bit.platformer.GameModels.Objects.Tree;
 //import ru.mipt.bit.platformer.LevelCharacteristic;

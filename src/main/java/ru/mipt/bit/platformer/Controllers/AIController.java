@@ -3,8 +3,9 @@ package ru.mipt.bit.platformer.Controllers;
 import ru.mipt.bit.platformer.Action;
 import ru.mipt.bit.platformer.Actions.Direction;
 import ru.mipt.bit.platformer.Actions.MoveAction;
+import ru.mipt.bit.platformer.Actions.ShootAction;
 import ru.mipt.bit.platformer.ObjectController;
-import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.CollidesController;
 import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.GameModels.Objects.Tank;
 
@@ -60,7 +61,7 @@ public class AIController implements ObjectController<Integer> {
         addMapping(DOWN, new MoveAction(Direction.DOWN, collidesController));
         addMapping(LEFT, new MoveAction(Direction.LEFT, collidesController));
         addMapping(RIGHT, new MoveAction(Direction.RIGHT, collidesController));
-
+        addMapping(SPACE, new ShootAction(collidesController));
     }
 
     @Override

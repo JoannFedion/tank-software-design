@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import ru.mipt.bit.platformer.Action;
 import ru.mipt.bit.platformer.Actions.Direction;
 import ru.mipt.bit.platformer.Actions.MoveAction;
+import ru.mipt.bit.platformer.Actions.ShootAction;
 import ru.mipt.bit.platformer.ObjectController;
-import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.CollidesController;
 import ru.mipt.bit.platformer.ModelObject;
 
 import java.util.HashMap;
@@ -40,8 +41,11 @@ public class InputController implements ObjectController<Integer> {
 
     @Override
     public void execute() {
-        Action action = getAction();
-        if (action != null && playerObject != null) action.apply(playerObject);
+        if (playerObject != null) {
+            Action action = getAction();
+            if (action != null) action.apply(playerObject);
+        }
+//
     }
 
     public void initKeyMappingForController(CollidesController collidesController) {
@@ -53,6 +57,7 @@ public class InputController implements ObjectController<Integer> {
         addMapping(S, new MoveAction(Direction.DOWN, collidesController));
         addMapping(RIGHT, new MoveAction(Direction.RIGHT, collidesController));
         addMapping(D, new MoveAction(Direction.RIGHT, collidesController));
+        addMapping(SPACE, new ShootAction(collidesController));
     }
 
     @Override

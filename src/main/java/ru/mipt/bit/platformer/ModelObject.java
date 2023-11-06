@@ -8,4 +8,5 @@ public interface ModelObject {
 
     public GridPoint2 getDestinationCoordinates();
 
+
 }

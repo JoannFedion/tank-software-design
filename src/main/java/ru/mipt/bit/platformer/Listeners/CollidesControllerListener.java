@@ -1,6 +1,6 @@
 package ru.mipt.bit.platformer.Listeners;
 
-import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.CollidesController;
 import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.LevelListener;
 
@@ -14,7 +14,7 @@ public class CollidesControllerListener implements LevelListener {
 
     @Override
     public void onDeleteGameObject(ModelObject object) {
-        collidesController.update();
+        collidesController.makeFreeCell(object);
     }
 
     @Override

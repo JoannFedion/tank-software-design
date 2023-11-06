@@ -1,6 +1,9 @@
 package ru.mipt.bit.platformer;
 
+import org.junit.jupiter.params.provider.EnumSource;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class LevelGame {
@@ -10,7 +13,6 @@ public class LevelGame {
     public LevelGame(List<ModelObject> listObjects) {
         this.objectsInGameList = listObjects;
         this.levelListenerList = new ArrayList<>();
-        System.out.println(objectsInGameList.size());
     }
 
     public List<ModelObject> getObjectsInGameList() {
@@ -18,10 +20,10 @@ public class LevelGame {
     }
 
     public void update(float deltaTime) {
-        for (ModelObject obj : objectsInGameList) {
-            {
-                obj.updateState(deltaTime);
-            }
+        List<ModelObject>  objectsInGameListCopy = new ArrayList<>();
+        objectsInGameListCopy.addAll(objectsInGameList);
+        for (ModelObject object : objectsInGameListCopy){
+            object.updateState(deltaTime);
         }
     }
 

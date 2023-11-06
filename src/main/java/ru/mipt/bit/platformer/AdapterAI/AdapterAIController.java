@@ -7,7 +7,7 @@ import org.awesome.ai.state.GameState;
 import org.awesome.ai.strategy.NotRecommendingAI;
 import ru.mipt.bit.platformer.Actions.Direction;
 import ru.mipt.bit.platformer.Actions.MoveAction;
-import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.CollidesController;
 import ru.mipt.bit.platformer.ObjectController;
 import org.awesome.ai.state.movable.*;
 import ru.mipt.bit.platformer.ModelObject;

@@ -1,14 +1,14 @@
 package ru.mipt.bit.platformer.Listeners;
 
-import ru.mipt.bit.platformer.GameFieldGraphics;
+import ru.mipt.bit.platformer.FieldGraphics;
 import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.LevelListener;
 
 public class GraphicsListener implements LevelListener {
 
-    private GameFieldGraphics gameFieldGraphics;
+    private FieldGraphics gameFieldGraphics;
 
-    public GraphicsListener(GameFieldGraphics gameFieldGraphics) {
+    public GraphicsListener(FieldGraphics gameFieldGraphics) {
         this.gameFieldGraphics = gameFieldGraphics;
     }
 
@@ -19,8 +19,6 @@ public class GraphicsListener implements LevelListener {
 
     @Override
     public void onAddGameObject(ModelObject object) {
-        gameFieldGraphics.createGraphicObject(object)
-
-        ;
+        gameFieldGraphics.createGraphicObject(object);
     }
 }

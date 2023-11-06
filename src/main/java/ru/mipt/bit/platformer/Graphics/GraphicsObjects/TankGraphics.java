@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.GraphicsObjects;
+package ru.mipt.bit.platformer.Graphics.GraphicsObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -50,5 +50,9 @@ public class TankGraphics implements GraphicsGameObjects {
                 modelTank.getDestinationCoordinates(),
                 modelTank.getMovementProgress()
         );
+    }
+    @Override
+    public Rectangle getRectangle() {
+        return tankRectangle;
     }
 }

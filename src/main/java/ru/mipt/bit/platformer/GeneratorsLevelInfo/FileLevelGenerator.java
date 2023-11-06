@@ -27,10 +27,11 @@ public class FileLevelGenerator implements LevelGenerator {
     private String pathToFile;
     private List<ModelObject> listObjects;
     private ModelObject playerObject;
+    private LevelGame levelGame;
 
     @Override
     public LevelInfo generateLevelInfo() {
-        return new LevelInfo(new LevelGame(listObjects), playerObject);
+        return new LevelInfo(levelGame, playerObject);
     }
 
     public FileLevelGenerator(LevelCharacteristic levelCharacteristic, String pathToFile) {
@@ -43,6 +44,7 @@ public class FileLevelGenerator implements LevelGenerator {
     }
 
     private void parse(String pathToFile) {
+        levelGame = new LevelGame(listObjects);
         int x = HEIGHT;
         int y = WIDTH;
         try (FileReader reader = new FileReader(pathToFile)) {
@@ -58,7 +60,7 @@ public class FileLevelGenerator implements LevelGenerator {
                         listObjects.add(new Tree(new GridPoint2(x, y)));
                         break;
                     case TANK_CELL:
-                        playerObject = new Tank(new GridPoint2(x, y), Direction.UP, INITIAL_HEALTH_TANK);
+                        playerObject = new Tank(new GridPoint2(x, y), Direction.UP, INITIAL_HEALTH_TANK, levelGame);
                         listObjects.add(playerObject);
                         break;
                     default:

@@ -8,4 +8,6 @@ public interface DamageModel extends ModelObject {
     public int takeDamage();
 
     public boolean isAlive();
+
+    public int getHealth();
 }

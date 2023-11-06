@@ -2,7 +2,7 @@ package ru.mipt.bit.platformer.Controllers;
 
 import ru.mipt.bit.platformer.Action;
 import ru.mipt.bit.platformer.ObjectController;
-import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.CollidesController;
 import ru.mipt.bit.platformer.ModelObject;
 
 import java.util.*;

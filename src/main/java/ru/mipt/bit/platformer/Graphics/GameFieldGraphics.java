@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer;
+package ru.mipt.bit.platformer.Graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,12 +8,16 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
+import ru.mipt.bit.platformer.FieldGraphics;
 import ru.mipt.bit.platformer.GameModels.Objects.Bullet;
 import ru.mipt.bit.platformer.GameModels.Objects.Tank;
 import ru.mipt.bit.platformer.GameModels.Objects.Tree;
-import ru.mipt.bit.platformer.GraphicsObjects.BulletGraphics;
-import ru.mipt.bit.platformer.GraphicsObjects.TankGraphics;
-import ru.mipt.bit.platformer.GraphicsObjects.TreeGraphics;
+import ru.mipt.bit.platformer.Graphics.GraphicsObjects.BulletGraphics;
+import ru.mipt.bit.platformer.Graphics.GraphicsObjects.TankGraphics;
+import ru.mipt.bit.platformer.Graphics.GraphicsObjects.TreeGraphics;
+import ru.mipt.bit.platformer.GraphicsGameObjects;
+import ru.mipt.bit.platformer.LevelGame;
+import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.ArrayList;
@@ -24,7 +28,7 @@ import java.util.Map;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
-public class GameFieldGraphics {
+public class GameFieldGraphics implements FieldGraphics {
     private final Batch batch;
     private final TiledMap level;
     private final MapRenderer levelRenderer;
@@ -45,15 +49,14 @@ public class GameFieldGraphics {
         this.objectGraphicsGameObjectsMap = new HashMap<>();
 
         createGraphicsObjects();
-
     }
 
-    public void deleteGraphicObject(ModelObject object){
+    public void deleteGraphicObject(ModelObject object) {
         listAllModelObjectsInGame.remove(object);
         listGraphicsObjects.remove(objectGraphicsGameObjectsMap.remove(object));
     }
 
-
+    @Override
     public void renderAllObjects() {
         // render each tile of the level
         levelRenderer.render();
@@ -64,19 +67,20 @@ public class GameFieldGraphics {
         calculateInterpolatedScreenCoordinatesForAllObjects();
     }
 
+    @Override
     public void dispose() {
         for (GraphicsGameObjects listGraphicsObject : listGraphicsObjects) listGraphicsObject.dispose();
         level.dispose();
         batch.dispose();
     }
 
-    public void createGraphicObject(ModelObject obj){
+    public void createGraphicObject(ModelObject obj) {
         GraphicsGameObjects graphObject = null;
         if (obj instanceof Tank) {
             graphObject = new TankGraphics((Tank) obj, groundLayer, "images/tank_blue.png");
         } else if (obj instanceof Tree) {
             graphObject = new TreeGraphics((Tree) obj, groundLayer, "images/greenTree.png");
-        } else if( obj instanceof Bullet){
+        } else if (obj instanceof Bullet) {
             graphObject = new BulletGraphics((Bullet) obj, groundLayer, "images/bullet.png");
         }
         listGraphicsObjects.add(graphObject);
@@ -93,12 +97,20 @@ public class GameFieldGraphics {
 
     private void calculateInterpolatedScreenCoordinatesForAllObjects() {
         for (GraphicsGameObjects graphicObject : listGraphicsObjects) {
-                graphicObject.calculateInterpolatedScreenCoordinates(tileMovement);
+            graphicObject.calculateInterpolatedScreenCoordinates(tileMovement);
         }
     }
 
+    @Override
     public float getDeltaTime() {
         return Gdx.graphics.getDeltaTime();
     }
+    @Override
+    public Map<ModelObject, GraphicsGameObjects> getObjectGraphicsGameObjectsMap() {
+        return objectGraphicsGameObjectsMap;
+    }
 
+    public Batch getBatch() {
+        return batch;
+    }
 }

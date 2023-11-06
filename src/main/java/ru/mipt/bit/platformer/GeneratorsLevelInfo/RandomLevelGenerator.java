@@ -14,23 +14,25 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomLevelGenerator implements LevelGenerator {
-    private List<ModelObject> listObjects;
+    private final List<ModelObject> listObjects;
     private final int numbers_tree;
     private final int numbers_enemy_tank;
     private Tank playerObject;
-    private Random random;
-    private int HEIGHT;
-    private int WIDTH;
+    private final Random random;
+    private final int HEIGHT;
+    private final int WIDTH;
     private final int INITIAL_HEALTH_TANK;
+    private final LevelGame levelGame;
 
     @Override
     public LevelInfo generateLevelInfo() {
         generateObjects();
-        return new LevelInfo(new LevelGame(listObjects), playerObject);
+        return new LevelInfo(levelGame, playerObject);
     }
 
     public RandomLevelGenerator(LevelCharacteristic levelCharacteristic, int treeNumbers, int enemyTankNumbers) {
         this.listObjects = new ArrayList<>();
+        this.levelGame = new LevelGame(listObjects);
         this.random = new Random();
         this.numbers_tree = treeNumbers;
         this.numbers_enemy_tank = enemyTankNumbers;
@@ -39,7 +41,7 @@ public class RandomLevelGenerator implements LevelGenerator {
         this.INITIAL_HEALTH_TANK = levelCharacteristic.getInitialHealthTank();
     }
     private void generatePlayerObject(){
-        playerObject = new Tank(generateCoordinates(), Direction.UP, INITIAL_HEALTH_TANK);
+        playerObject = new Tank(generateCoordinates(), Direction.UP, INITIAL_HEALTH_TANK, levelGame);
         listObjects.add(playerObject);
     }
 
@@ -59,7 +61,7 @@ public class RandomLevelGenerator implements LevelGenerator {
         GridPoint2 coordinates = generateCoordinates();
         Direction[] listValuesDirection = Direction.values();
         int numberDirection = random.nextInt(listValuesDirection.length);
-        return new Tank(coordinates, listValuesDirection[numberDirection], INITIAL_HEALTH_TANK);
+        return new Tank(coordinates, listValuesDirection[numberDirection], INITIAL_HEALTH_TANK, levelGame);
     }
 
     private void generateTrees() {

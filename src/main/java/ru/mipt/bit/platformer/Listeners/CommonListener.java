@@ -1,6 +1,6 @@
 package ru.mipt.bit.platformer.Listeners;
 
-import ru.mipt.bit.platformer.ObjectControllers.CollidesController;
+import ru.mipt.bit.platformer.CollidesController;
 import ru.mipt.bit.platformer.ModelObject;
 import ru.mipt.bit.platformer.LevelListener;
 

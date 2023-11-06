@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.GameModels.DamageModel;
 import ru.mipt.bit.platformer.ModelObject;
 
-public class Tree implements ModelObject, DamageModel {
+public class Tree implements ModelObject {
     private GridPoint2 coordinates;
 
     public Tree(GridPoint2 coordinates) {
@@ -24,18 +24,4 @@ public class Tree implements ModelObject, DamageModel {
         return coordinates;
     }
 
-    @Override
-    public void getDamage(DamageModel damageModel) {
-
-    }
-
-    @Override
-    public boolean isAlive() {
-        return true;
-    }
-
-    @Override
-    public int takeDamage() {
-        return 0;
-    }
 }
