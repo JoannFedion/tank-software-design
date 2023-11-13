@@ -16,7 +16,7 @@ public class HardShootState implements StateShoot {
     @Override
     public boolean isSuit() {
         float ratioHealth = ((float) tank.getHealth()) / tank.getMaxHealth();
-        return ratioHealth < 0.15;
+        return ratioHealth < BOUND_HEALTH;
     }
 
     @Override

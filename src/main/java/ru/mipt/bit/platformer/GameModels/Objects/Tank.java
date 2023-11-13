@@ -53,7 +53,8 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
                 new LightShootState(this),
                 new HardShootState(this)
         );
-        //setStates();
+
+        setStates();
     }
 
     @Override
@@ -72,12 +73,10 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
     @Override
     public void moveTo(Direction direction, Boolean isPossibleToMove) {
         if (!isMoving()) {
-            System.out.println(isPossibleToMove);
             this.direction = direction;
             if (isPossibleToMove) {
                 destinationCoordinates = direction.addCoordinates(coordinates);
                 movementProgress = MOVEMENT_STARTED;
-                System.out.println(movementProgress);
             }
         }
     }
@@ -88,14 +87,13 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
             levelGame.delete(this);
             return;
         }
-//        movementProgress = stateMotion.updateMovementProgress(deltaTime);
-        movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
+        movementProgress = stateMotion.updateMovementProgress(deltaTime);
         if (isEqual(movementProgress, MOVEMENT_COMPLETED)) {
             // record that the player has reached his/her destination
             coordinates = destinationCoordinates;
         }
 
-        //setStates();
+        setStates();
     }
 
     @Override

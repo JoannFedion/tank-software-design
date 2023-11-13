@@ -24,13 +24,14 @@ public class GameDesktopLauncher implements ApplicationListener {
     private LevelGame levelGame;
     private CollidesController collidesController;
     private List<ObjectController<?>> objectControllerList;
+    private GameFieldGraphics fieldGraphics;
     private float deltaTime;
 
     @Override
     public void create() {
-        LevelCharacteristic levelCharacteristic = new LevelCharacteristic(6, 10, 3);
+        LevelCharacteristic levelCharacteristic = new LevelCharacteristic(6, 10, 4);
 
-        LevelGenerator levelGenerator = new RandomLevelGenerator(levelCharacteristic, 2, 0);
+        LevelGenerator levelGenerator = new RandomLevelGenerator(levelCharacteristic, 2, 3);
 
         LevelInfo levelInfo = levelGenerator.generateLevelInfo();
 
@@ -42,9 +43,8 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         Toogle toogle = new Toogle(false);
 
-        GameFieldGraphics fieldGraphics = new GameFieldGraphics("level.tmx", levelGame);
+        fieldGraphics = new GameFieldGraphics("level.tmx", levelGame);
 
-        deltaTime = fieldGraphics.getDeltaTime();
         System.out.println(deltaTime);
 
         gameFieldGraphics = new DecoratorGameFieldGraphics(fieldGraphics, levelCharacteristic, toogle);
@@ -77,7 +77,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void render() {
         clearScreen();
         objectControllerList.forEach(ObjectController::execute);
-        levelGame.update(deltaTime);
+        levelGame.update(fieldGraphics.getDeltaTime());
         collidesController.update();
         gameFieldGraphics.renderAllObjects();
     }
