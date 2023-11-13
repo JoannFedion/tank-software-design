@@ -4,7 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import ru.mipt.bit.platformer.Actions.ToogleAction;
+import ru.mipt.bit.platformer.AdapterAI.AdapterAIController;
 import ru.mipt.bit.platformer.Controllers.AIController;
 import ru.mipt.bit.platformer.Controllers.InputController;
 import ru.mipt.bit.platformer.GeneratorsLevelInfo.LevelInfo;
@@ -13,36 +13,41 @@ import ru.mipt.bit.platformer.Graphics.DecoratorGameFieldGraphics;
 import ru.mipt.bit.platformer.Graphics.GameFieldGraphics;
 import ru.mipt.bit.platformer.Listeners.*;
 
+import java.util.List;
+
 import static com.badlogic.gdx.Input.Keys.L;
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
     private FieldGraphics gameFieldGraphics;
-    private LevelGenerator levelGenerator;
-    private ObjectController<Integer> inputController;
     private LevelGame levelGame;
     private CollidesController collidesController;
-    private ModelObject playerObject;
-    private ObjectController<Integer> AIController;
-    private ObjectController<org.awesome.ai.Action> AIInternetController;
+    private List<ObjectController<?>> objectControllerList;
+    private float deltaTime;
 
     @Override
     public void create() {
         LevelCharacteristic levelCharacteristic = new LevelCharacteristic(6, 10, 3);
 
-        levelGenerator = new RandomLevelGenerator(levelCharacteristic, 2, 3);
+        LevelGenerator levelGenerator = new RandomLevelGenerator(levelCharacteristic, 2, 0);
 
         LevelInfo levelInfo = levelGenerator.generateLevelInfo();
 
-        playerObject = levelInfo.getPlayerObject();
+        ModelObject playerObject = levelInfo.getPlayerObject();
 
         levelGame = levelInfo.getLevelGame();
 
         collidesController = new CollidesController(levelGame, levelCharacteristic);
 
         Toogle toogle = new Toogle(false);
-        gameFieldGraphics = new DecoratorGameFieldGraphics(new GameFieldGraphics("level.tmx", levelGame), levelCharacteristic, toogle);
+
+        GameFieldGraphics fieldGraphics = new GameFieldGraphics("level.tmx", levelGame);
+
+        deltaTime = fieldGraphics.getDeltaTime();
+        System.out.println(deltaTime);
+
+        gameFieldGraphics = new DecoratorGameFieldGraphics(fieldGraphics, levelCharacteristic, toogle);
 
         CommonListener commonListener = new CommonListener(collidesController);
 
@@ -51,35 +56,28 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         ControllersListener controllersListener = new ControllersListener();
 
-        inputController = new InputController(playerObject);
-        inputController.initKeyMappingForController(collidesController);
-        inputController.addMapping(L, new ToogleAction(toogle));
+        ObjectController<Integer> inputController = new InputController(playerObject, collidesController, toogle);
 
         controllersListener.addControllers(inputController);
 
-        AIController = new AIController(levelGame.getObjectsInGameList(), playerObject);
-        AIController.initKeyMappingForController(collidesController);
+        ObjectController<Integer> AIController = new AIController(levelGame.getObjectsInGameList(), playerObject, collidesController);
 
         controllersListener.addControllers(AIController);
-
-//        AIInternetController = new AdapterAIController(levelGame.getObjectsInGameList(), (MovingObjects) playerObject, levelCharacteristic, collidesController);
-//        AIInternetController.addMapping(org.awesome.ai.Action.Shoot, shoot);
-//        controllersListener.addControllers(AIInternetController);
 
         commonListener.addListener(graphicsListener);
         commonListener.addListener(collisionControllerListener);
         commonListener.addListener(controllersListener);
 
         levelGame.addListener(commonListener);
+
+        objectControllerList = List.of(inputController, AIController);
     }
 
     @Override
     public void render() {
         clearScreen();
-        inputController.execute();
-        AIController.execute();
-//        AIInternetController.execute();
-        levelGame.update(gameFieldGraphics.getDeltaTime());
+        objectControllerList.forEach(ObjectController::execute);
+        levelGame.update(deltaTime);
         collidesController.update();
         gameFieldGraphics.renderAllObjects();
     }

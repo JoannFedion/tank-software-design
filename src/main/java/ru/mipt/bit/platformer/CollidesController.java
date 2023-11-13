@@ -6,8 +6,6 @@ import ru.mipt.bit.platformer.Actions.Direction;
 import java.util.*;
 
 public class CollidesController {
-    //    private final int BUSY = 1;
-//    private final int FREE = 0;
     private final int widthLevel;
     private final int heightLevel;
     private final LevelGame levelGame;

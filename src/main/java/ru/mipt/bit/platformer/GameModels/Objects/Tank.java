@@ -2,11 +2,17 @@ package ru.mipt.bit.platformer.GameModels.Objects;
 
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.Actions.Direction;
-import ru.mipt.bit.platformer.GameModels.DamageModel;
-import ru.mipt.bit.platformer.GameModels.MovingObjects;
-import ru.mipt.bit.platformer.GameModels.ShootingObject;
+import ru.mipt.bit.platformer.GameModels.*;
+import ru.mipt.bit.platformer.GameModels.States.Motion.HardMotionState;
+import ru.mipt.bit.platformer.GameModels.States.Motion.LightMotionState;
+import ru.mipt.bit.platformer.GameModels.States.Motion.MediumMotionState;
+import ru.mipt.bit.platformer.GameModels.States.Shoot.HardShootState;
+import ru.mipt.bit.platformer.GameModels.States.Shoot.LightShootState;
 import ru.mipt.bit.platformer.LevelGame;
 import ru.mipt.bit.platformer.CollidesController;
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
@@ -15,17 +21,19 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
     private static final float MOVEMENT_SPEED = 0.4f;
     private static final float MOVEMENT_COMPLETED = 1f;
     private static final int MOVEMENT_STARTED = 0;
-    private static final int BULLET_DAMAGE = 1;
 
-
+    private final List<StateMotion> stateMotionList;
+    private final List<StateShoot> stateShootList;
+    private StateMotion stateMotion;
+    private StateShoot stateShoot;
     private float movementProgress;
     private GridPoint2 coordinates;
     private GridPoint2 destinationCoordinates;
     private Direction direction;
+    private final int maxHealth;
     private int health;
     private int damage;
     private final LevelGame levelGame;
-
 
     public Tank(GridPoint2 coordinates, Direction direction, int tankHealth, LevelGame levelGame) {
         this.levelGame = levelGame;
@@ -33,44 +41,63 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
         this.coordinates = coordinates;
         this.destinationCoordinates = coordinates;
         this.direction = direction;
+        this.maxHealth = tankHealth;
         this.health = tankHealth;
+
+        this.stateMotionList = List.of(
+                new LightMotionState(this),
+                new MediumMotionState(this),
+                new HardMotionState(this)
+        );
+        this.stateShootList = List.of(
+                new LightShootState(this),
+                new HardShootState(this)
+        );
+        //setStates();
     }
 
     @Override
     public GridPoint2 getCoordinates() {
         return coordinates;
     }
+
     @Override
     public GridPoint2 getDestinationCoordinates() {
         return destinationCoordinates;
     }
-    @Override
-    public boolean isMoving() {
+
+    private boolean isMoving() {
         return !isEqual(movementProgress, MOVEMENT_COMPLETED);
     }
     @Override
-    public void moveTo(GridPoint2 tankTargetCoordinates) {
+    public void moveTo(Direction direction, Boolean isPossibleToMove) {
         if (!isMoving()) {
-            destinationCoordinates = tankTargetCoordinates;
-            movementProgress = MOVEMENT_STARTED;
+            System.out.println(isPossibleToMove);
+            this.direction = direction;
+            if (isPossibleToMove) {
+                destinationCoordinates = direction.addCoordinates(coordinates);
+                movementProgress = MOVEMENT_STARTED;
+                System.out.println(movementProgress);
+            }
         }
     }
-    @Override
-    public void rotate(Direction direction) {
-        this.direction = direction;
-    }
+
     @Override
     public void updateState(float deltaTime) {
-        if (!isAlive()){
+        if (!isAlive()) {
             levelGame.delete(this);
             return;
         }
+//        movementProgress = stateMotion.updateMovementProgress(deltaTime);
         movementProgress = continueProgress(movementProgress, deltaTime, MOVEMENT_SPEED);
         if (isEqual(movementProgress, MOVEMENT_COMPLETED)) {
             // record that the player has reached his/her destination
             coordinates = destinationCoordinates;
         }
+
+        //setStates();
     }
+
     @Override
     public Direction getDirection() {
         return direction;
@@ -83,6 +110,7 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
     @Override
     public void getDamage(DamageModel damageModel) {
         this.health -= damageModel.takeDamage();
+
     }
 
     @Override
@@ -97,18 +125,31 @@ public class Tank implements MovingObjects, ShootingObject, DamageModel {
 
     @Override
     public void shoot(CollidesController collidesController) {
-        if (isPossiblyToShoot()){
-            Bullet bullet = new Bullet(direction, direction.addCoordinates(coordinates), BULLET_DAMAGE, collidesController, levelGame);
-            levelGame.add(bullet);
-        }
+            Bullet bullet = stateShoot.shoot(collidesController, levelGame);
+            if (!(bullet == null)) {
+                levelGame.add(bullet);
+            }
     }
 
     @Override
     public int getHealth() {
         return health;
     }
+    public float getMOVEMENT_SPEED() {
+        return MOVEMENT_SPEED;
+    }
+    private void setStates() {
+        stateShoot = setStateTank(stateShootList);
+        stateMotion = setStateTank(stateMotionList);
+    }
+    private<T extends State> T setStateTank(List<T> stateList){
+        Optional<T> optionalStateTank = stateList.stream()
+                .filter(State::isSuit)
+                .findFirst();
+        return optionalStateTank.orElse(null);
+    }
 
-    private boolean isPossiblyToShoot(){
-        return true;
+    public float getMaxHealth() {
+        return maxHealth;
     }
 }

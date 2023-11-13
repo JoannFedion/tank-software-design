@@ -101,7 +101,6 @@ public class GameFieldGraphics implements FieldGraphics {
         }
     }
 
-    @Override
     public float getDeltaTime() {
         return Gdx.graphics.getDeltaTime();
     }

@@ -21,32 +21,27 @@ import java.util.Map;
 
 public class AdapterAIController implements ObjectController<Action> {
 
-    private AdapterGameState adapterGameState;
-    private Map<Direction, Orientation> directionToOrientationMap;
+    private final AdapterGameState adapterGameState;
     private Map<Action, ru.mipt.bit.platformer.Action> actionAIandGameMap;
-
     private final AI notRecommendingAI;
 
     public AdapterAIController(List<ModelObject> modelObjectList, MovingObjects playerObject, LevelCharacteristic levelCharacteristic, CollidesController collidesController) {
-        createMappingDirectionToOrientation();
-        initKeyMappingForController(collidesController);
+        createActionsMappingForController(collidesController);
         this.adapterGameState = new AdapterGameState(
                 modelObjectList,
                 playerObject,
                 levelCharacteristic,
-                directionToOrientationMap);
+                Map.of(
+                        Direction.UP, Orientation.N,
+                        Direction.DOWN, Orientation.S,
+                        Direction.LEFT, Orientation.W,
+                        Direction.RIGHT, Orientation.E
+                )
+        );
         this.notRecommendingAI = new NotRecommendingAI();
     }
-    private void createMappingDirectionToOrientation(){
-        directionToOrientationMap = new HashMap<>();
-        directionToOrientationMap.put(Direction.UP, Orientation.N);
-        directionToOrientationMap.put(Direction.DOWN, Orientation.S);
-        directionToOrientationMap.put(Direction.LEFT, Orientation.W);
-        directionToOrientationMap.put(Direction.RIGHT, Orientation.E);
-    }
 
-    @Override
-    public void initKeyMappingForController(CollidesController collidesController) {
+    private void createActionsMappingForController(CollidesController collidesController) {
         actionAIandGameMap = new HashMap<>();
         addMapping(Action.MoveNorth, new MoveAction(Direction.UP, collidesController));
         addMapping(Action.MoveSouth, new MoveAction(Direction.DOWN, collidesController));
@@ -60,8 +55,7 @@ public class AdapterAIController implements ObjectController<Action> {
         adapterGameState.deleteObject(object);
     }
 
-    @Override
-    public void addMapping(Action actionAI, ru.mipt.bit.platformer.Action actionGame) {
+    private void addMapping(Action actionAI, ru.mipt.bit.platformer.Action actionGame) {
         actionAIandGameMap.put(actionAI, actionGame);
     }
 
@@ -69,7 +63,7 @@ public class AdapterAIController implements ObjectController<Action> {
     public void execute() {
         GameState gameState = adapterGameState.buildGameState();
         Map<Actor, ModelObject> actorAndObjectMap = adapterGameState.getActors();
-        for(Recommendation recommendation : notRecommendingAI.recommend(gameState)){
+        for (Recommendation recommendation : notRecommendingAI.recommend(gameState)) {
             if (recommendation.getActor() != gameState.getPlayer()) {
                 ModelObject objects = actorAndObjectMap.get(recommendation.getActor());
                 ru.mipt.bit.platformer.Action action = actionAIandGameMap.get(recommendation.getAction());

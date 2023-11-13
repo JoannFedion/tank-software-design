@@ -19,13 +19,7 @@ public class MoveAction implements Action {
     public void apply(ModelObject object) {
         if (object instanceof MovingObjects) {
             MovingObjects movingObjects = (MovingObjects) object;
-            if (!movingObjects.isMoving()) {
-                movingObjects.rotate(direction);
-                if (isPossibleToApplyAction(direction, movingObjects)) {
-                    GridPoint2 newCoordinates = direction.addCoordinates(movingObjects.getCoordinates());
-                    movingObjects.moveTo(newCoordinates);
-                }
-            }
+            movingObjects.moveTo(direction, isPossibleToApplyAction(direction, object));
         }
     }
 

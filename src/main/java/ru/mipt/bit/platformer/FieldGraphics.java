@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface FieldGraphics {
-    public void renderAllObjects();
-    public void dispose();
-    public float getDeltaTime();
-    public void createGraphicObject(ModelObject obj);
-    public void deleteGraphicObject(ModelObject object);
-
-    public Map<ModelObject, GraphicsGameObjects> getObjectGraphicsGameObjectsMap();
-    public Batch getBatch();
+    void renderAllObjects();
+    void dispose();
+    void createGraphicObject(ModelObject obj);
+    void deleteGraphicObject(ModelObject object);
+    Map<ModelObject, GraphicsGameObjects> getObjectGraphicsGameObjectsMap();
+    Batch getBatch();
 
 }

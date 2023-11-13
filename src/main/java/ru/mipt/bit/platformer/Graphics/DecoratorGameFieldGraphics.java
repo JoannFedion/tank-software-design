@@ -54,11 +54,6 @@ public class DecoratorGameFieldGraphics implements FieldGraphics {
     }
 
     @Override
-    public float getDeltaTime() {
-        return gameFieldGraphics.getDeltaTime();
-    }
-
-    @Override
     public void createGraphicObject(ModelObject obj) {
         gameFieldGraphics.createGraphicObject(obj);
     }

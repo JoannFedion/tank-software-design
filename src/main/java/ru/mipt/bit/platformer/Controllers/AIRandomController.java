@@ -9,28 +9,17 @@ import java.util.*;
 
 public class AIRandomController implements ObjectController<Integer> {
 
-    private final Map<Integer, Action> keyToActionMap;
+    private final List<Action> actionList;
     private ModelObject AIobject;
 
-    public AIRandomController(ModelObject AIobject , Map<Integer, Action> keyToActionMap) {
+    public AIRandomController(ModelObject AIobject , List<Action> actionList) {
         this.AIobject = AIobject;
-        this.keyToActionMap = keyToActionMap;
+        this.actionList = actionList;
     }
 
     public Action getAction(){
         Random random = new Random();
-        List<Integer> keysAsArray = new ArrayList<>(keyToActionMap.keySet());
-        return keyToActionMap.get(keysAsArray.get(random.nextInt(keysAsArray.size())));
-    }
-
-    @Override
-    public void initKeyMappingForController(CollidesController collidesController) {
-        //
-    }
-
-    @Override
-    public void addMapping(Integer key, Action action) {
-        keyToActionMap.put(key, action);
+        return actionList.get(random.nextInt(actionList.size()));
     }
 
     @Override
